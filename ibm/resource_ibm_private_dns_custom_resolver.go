@@ -12,9 +12,9 @@ import (
 	"github.com/IBM/networking-go-sdk/dnssvcsv1"
 
 	"github.com/IBM/go-sdk-core/v5/core"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 const (
@@ -40,12 +40,12 @@ const (
 
 func resouceIBMPrivateDNSCustomResolver() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resouceIBMPrivateDNSCustomResolverCreate,
-		ReadContext:   resouceIBMPrivateDNSCustomResolverRead,
-		UpdateContext: resouceIBMPrivateDNSCustomResolverUpdate,
-		DeleteContext: resouceIBMPrivateDNSCustomResolverDelete,
-		Exists:        resouceIBMPrivateDNSCustomResolverExists,
-		Importer:      &schema.ResourceImporter{},
+		Create:   resouceIBMPrivateDNSCustomResolverCreate,
+		Read:     resouceIBMPrivateDNSCustomResolverRead,
+		Update:   resouceIBMPrivateDNSCustomResolverUpdate,
+		Delete:   resouceIBMPrivateDNSCustomResolverDelete,
+		Exists:   resouceIBMPrivateDNSCustomResolverExists,
+		Importer: &schema.ResourceImporter{},
 
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(10 * time.Minute),
@@ -138,10 +138,10 @@ func resouceIBMPrivateDNSCustomResolver() *schema.Resource {
 	}
 }
 
-func resouceIBMPrivateDNSCustomResolverCreate(context context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resouceIBMPrivateDNSCustomResolverCreate(d *schema.ResourceData, meta interface{}) error {
 	sess, err := meta.(ClientSession).PrivateDNSClientSession()
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 
 	var crName, crDescription string
@@ -161,9 +161,9 @@ func resouceIBMPrivateDNSCustomResolverCreate(context context.Context, d *schema
 	customResolverOption.SetDescription(crDescription)
 	customResolverOption.SetLocations(expandPdnsCRLocations(crLocations))
 
-	result, resp, err := sess.CreateCustomResolverWithContext(context, customResolverOption)
+	result, resp, err := sess.CreateCustomResolverWithContext(context.TODO(), customResolverOption)
 	if err != nil || result == nil {
-		return diag.FromErr(fmt.Errorf("Error reading the  custom resolver %s:%s", err, resp))
+		return fmt.Errorf("Error reading the  custom resolver %s:%s", err, resp)
 	}
 
 	d.SetId(convertCisToTfTwoVar(*result.ID, crn))
@@ -171,34 +171,34 @@ func resouceIBMPrivateDNSCustomResolverCreate(context context.Context, d *schema
 
 	_, err = waitForPDNSCustomResolverHealthy(d, meta)
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 
 	// Enable Custrom Resolver
-	return resouceIBMPrivateDNSCustomResolverUpdate(context, d, meta)
+	return resouceIBMPrivateDNSCustomResolverUpdate(d, meta)
 }
 
-func resouceIBMPrivateDNSCustomResolverRead(context context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resouceIBMPrivateDNSCustomResolverRead(d *schema.ResourceData, meta interface{}) error {
 
 	sess, err := meta.(ClientSession).PrivateDNSClientSession()
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 
 	customResolverID, crn, err := convertTftoCisTwoVar(d.Id())
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 
 	opt := sess.NewGetCustomResolverOptions(crn, customResolverID)
-	result, response, err := sess.GetCustomResolverWithContext(context, opt)
+	result, response, err := sess.GetCustomResolverWithContext(context.TODO(), opt)
 
 	if err != nil {
 		if response != nil && response.StatusCode == 404 {
 			d.SetId("")
 			return nil
 		}
-		return diag.FromErr(fmt.Errorf("Error reading the  custom resolver %s:%s", err, response))
+		return fmt.Errorf("Error reading the  custom resolver %s:%s", err, response)
 	}
 	d.Set(pdnsInstanceID, crn)
 	d.Set(pdnsCRId, *result.ID)
@@ -211,15 +211,15 @@ func resouceIBMPrivateDNSCustomResolverRead(context context.Context, d *schema.R
 	return nil
 }
 
-func resouceIBMPrivateDNSCustomResolverUpdate(context context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resouceIBMPrivateDNSCustomResolverUpdate(d *schema.ResourceData, meta interface{}) error {
 	sess, err := meta.(ClientSession).PrivateDNSClientSession()
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 
 	customResolverID, crn, err := convertTftoCisTwoVar(d.Id())
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 
 	if d.HasChange(pdnsCRName) ||
@@ -240,43 +240,43 @@ func resouceIBMPrivateDNSCustomResolverUpdate(context context.Context, d *schema
 			opt.SetEnabled(crEnabled)
 		}
 
-		result, resp, err := sess.UpdateCustomResolverWithContext(context, opt)
+		result, resp, err := sess.UpdateCustomResolverWithContext(context.TODO(), opt)
 		if err != nil || result == nil {
-			return diag.FromErr(fmt.Errorf("Error updating the  custom resolver %s:%s", err, resp))
+			return fmt.Errorf("Error updating the  custom resolver %s:%s", err, resp)
 		}
 
 	}
 
-	return resouceIBMPrivateDNSCustomResolverRead(context, d, meta)
+	return resouceIBMPrivateDNSCustomResolverRead(d, meta)
 }
 
-func resouceIBMPrivateDNSCustomResolverDelete(context context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resouceIBMPrivateDNSCustomResolverDelete(d *schema.ResourceData, meta interface{}) error {
 	sess, err := meta.(ClientSession).PrivateDNSClientSession()
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 
 	customResolverID, crn, err := convertTftoCisTwoVar(d.Id())
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 
 	// Disable Cutsom Resolver before deleting
 	optEnabled := sess.NewUpdateCustomResolverOptions(crn, customResolverID)
 	optEnabled.SetEnabled(false)
-	result, resp, errEnabled := sess.UpdateCustomResolverWithContext(context, optEnabled)
+	result, resp, errEnabled := sess.UpdateCustomResolverWithContext(context.TODO(), optEnabled)
 	if err != nil || result == nil {
-		return diag.FromErr(fmt.Errorf("Error updating the  custom resolver to disable before deleting %s:%s", errEnabled, resp))
+		return fmt.Errorf("Error updating the  custom resolver to disable before deleting %s:%s", errEnabled, resp)
 	}
 
 	opt := sess.NewDeleteCustomResolverOptions(crn, customResolverID)
-	response, err := sess.DeleteCustomResolverWithContext(context, opt)
+	response, err := sess.DeleteCustomResolverWithContext(context.TODO(), opt)
 
 	if err != nil {
 		if response != nil && response.StatusCode == 404 {
 			return nil
 		}
-		return diag.FromErr(fmt.Errorf("Error deleting the  custom resolver %s:%s", err, response))
+		return fmt.Errorf("Error deleting the  custom resolver %s:%s", err, response)
 	}
 
 	d.SetId("")

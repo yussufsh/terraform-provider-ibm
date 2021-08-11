@@ -4,16 +4,15 @@
 package ibm
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"os"
 	"time"
 
 	"github.com/IBM-Cloud/container-services-go-sdk/kubernetesserviceapiv1"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/customdiff"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 const (
@@ -36,10 +35,10 @@ func resourceIBMSatelliteLocation() *schema.Resource {
 		Importer: &schema.ResourceImporter{},
 
 		CustomizeDiff: customdiff.Sequence(
-			func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
+			func(diff *schema.ResourceDiff, v interface{}) error {
 				return resourceTagsCustomizeDiff(diff)
 			},
-			func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
+			func(diff *schema.ResourceDiff, v interface{}) error {
 				return immutableResourceCustomizeDiff([]string{satLocation, sateLocZone, "resource_group_id"}, diff)
 			},
 		),

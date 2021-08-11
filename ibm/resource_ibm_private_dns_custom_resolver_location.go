@@ -7,8 +7,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 const (
@@ -22,11 +21,11 @@ const (
 
 func resourceIBMPrivateDNSCRLocation() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceIBMPrivateDNSLocationCreate,
-		ReadContext:   resourceIBMPrivateDNSLocationRead,
-		UpdateContext: resourceIBMPrivateDNSLocationUpdate,
-		DeleteContext: resourceIBMPrivateDNSLocationDelete,
-		Importer:      &schema.ResourceImporter{},
+		Create:   resourceIBMPrivateDNSLocationCreate,
+		Read:     resourceIBMPrivateDNSLocationRead,
+		Update:   resourceIBMPrivateDNSLocationUpdate,
+		Delete:   resourceIBMPrivateDNSLocationDelete,
+		Importer: &schema.ResourceImporter{},
 		Schema: map[string]*schema.Schema{
 			pdnsInstanceID: {
 				Type:        schema.TypeString,
@@ -73,10 +72,10 @@ func resourceIBMPrivateDNSCRLocation() *schema.Resource {
 		},
 	}
 }
-func resourceIBMPrivateDNSLocationCreate(context context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceIBMPrivateDNSLocationCreate(d *schema.ResourceData, meta interface{}) error {
 	sess, err := meta.(ClientSession).PrivateDNSClientSession()
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 	instanceID := d.Get(pdnsInstanceID).(string)
 	resolverID := d.Get(pdnsResolverID).(string)
@@ -89,22 +88,22 @@ func resourceIBMPrivateDNSLocationCreate(context context.Context, d *schema.Reso
 	if enable, ok := d.GetOkExists(pdnsCRLocationEnable); ok {
 		opt.SetEnabled(enable.(bool))
 	}
-	result, resp, err := sess.AddCustomResolverLocationWithContext(context, opt)
+	result, resp, err := sess.AddCustomResolverLocationWithContext(context.TODO(), opt)
 
 	if err != nil || result == nil {
-		return diag.FromErr(fmt.Errorf("Error creating the custom resolver location %s:%s", err, resp))
+		return fmt.Errorf("Error creating the custom resolver location %s:%s", err, resp)
 	}
 	d.SetId(convertCisToTfThreeVar(*result.ID, resolverID, instanceID))
-	return resourceIBMPrivateDNSLocationRead(context, d, meta)
+	return resourceIBMPrivateDNSLocationRead(d, meta)
 }
 
-func resourceIBMPrivateDNSLocationRead(context context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceIBMPrivateDNSLocationRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
-func resourceIBMPrivateDNSLocationUpdate(context context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceIBMPrivateDNSLocationUpdate(d *schema.ResourceData, meta interface{}) error {
 	sess, err := meta.(ClientSession).PrivateDNSClientSession()
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 	locationID, resolverID, instanceID, err := convertTfToCisThreeVar(d.Id())
 	updatelocation := sess.NewUpdateCustomResolverLocationOptions(instanceID, resolverID, locationID)
@@ -117,26 +116,26 @@ func resourceIBMPrivateDNSLocationUpdate(context context.Context, d *schema.Reso
 		if e, ok := d.GetOkExists(pdnsCRLocationEnable); ok {
 			updatelocation.SetEnabled(e.(bool))
 		}
-		result, resp, err := sess.UpdateCustomResolverLocationWithContext(context, updatelocation)
+		result, resp, err := sess.UpdateCustomResolverLocationWithContext(context.TODO(), updatelocation)
 		if err != nil || result == nil {
-			return diag.FromErr(fmt.Errorf("Error updating the custom resolver location %s:%s", err, resp))
+			return fmt.Errorf("Error updating the custom resolver location %s:%s", err, resp)
 		}
 	}
-	return resourceIBMPrivateDNSLocationRead(context, d, meta)
+	return resourceIBMPrivateDNSLocationRead(d, meta)
 }
-func resourceIBMPrivateDNSLocationDelete(context context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceIBMPrivateDNSLocationDelete(d *schema.ResourceData, meta interface{}) error {
 	sess, err := meta.(ClientSession).PrivateDNSClientSession()
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 	locationID, resolverID, instanceID, err := convertTfToCisThreeVar(d.Id())
 	deleteCRlocation := sess.NewDeleteCustomResolverLocationOptions(instanceID, resolverID, locationID)
-	resp, errDel := sess.DeleteCustomResolverLocationWithContext(context, deleteCRlocation)
+	resp, errDel := sess.DeleteCustomResolverLocationWithContext(context.TODO(), deleteCRlocation)
 	if errDel != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			return nil
 		}
-		return diag.FromErr(fmt.Errorf("Error deleting the custom resolver location %s:%s", errDel, resp))
+		return fmt.Errorf("Error deleting the custom resolver location %s:%s", errDel, resp)
 	}
 	d.SetId("")
 	return nil
