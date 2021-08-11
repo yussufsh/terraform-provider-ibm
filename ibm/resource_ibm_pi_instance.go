@@ -213,7 +213,7 @@ func resourceIBMPIInstance() *schema.Resource {
 			helpers.PIInstanceSystemType: {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validateAllowedStringValue([]string{"s922", "e880", "e980"}),
+				ValidateFunc: validateAllowedStringValue([]string{"s922", "e880", "e980", "s922-ocp"}),
 				Description:  "PI Instance system type",
 			},
 			helpers.PIInstanceReplicants: {
