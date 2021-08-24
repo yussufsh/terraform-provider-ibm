@@ -88,6 +88,7 @@ var pi_volume_name string
 var pi_network_name string
 var pi_cloud_instance_id string
 var pi_instance_name string
+var piCloudConnectionName string
 
 // For Image
 
@@ -469,6 +470,12 @@ func init() {
 		pi_instance_name = "terraform-test-power"
 		fmt.Println("[INFO] Set the environment variable PI_PVM_INSTANCE_ID for testing pi_instance_name resource else it is set to default value 'terraform-test-power'")
 	}
+	piCloudConnectionName = os.Getenv("PI_CLOUD_CONNECTION_NAME")
+	if piCloudConnectionName == "" {
+		piCloudConnectionName = "terraform-test-power"
+		fmt.Println("[INFO] Set the environment variable PI_CLOUD_CONNECTION_NAME for testing ibm_pi_cloud_connection resource else it is set to default value 'terraform-test-power'")
+	}
+
 	workspaceID = os.Getenv("SCHEMATICS_WORKSPACE_ID")
 	if workspaceID == "" {
 		workspaceID = "us-south.workspace.tf-acc-test-schematics-state-test.392cd99f"

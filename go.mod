@@ -48,3 +48,6 @@ require (
 )
 
 replace github.com/softlayer/softlayer-go v1.0.3 => github.com/IBM-Cloud/softlayer-go v1.0.3-tf
+
+// If you are using local diretory
+// replace github.com/IBM-Cloud/power-go-client => ../power-go-client

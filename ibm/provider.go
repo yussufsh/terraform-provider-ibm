@@ -365,6 +365,7 @@ func Provider() *schema.Provider {
 			"ibm_pi_network_port":       dataSourceIBMPINetworkPort(),
 			"ibm_pi_cloud_instance":     dataSourceIBMPICloudInstance(),
 			"ibm_pi_catalog_images":     dataSourceIBMPICatalogImages(),
+			"ibm_pi_cloud_connection":   dataSourceIBMPICloudConnection(),
 
 			// Added for private dns zones
 
@@ -630,6 +631,7 @@ func Provider() *schema.Provider {
 			"ibm_pi_network_port":        resourceIBMPINetworkPort(),
 			"ibm_pi_snapshot":            resourceIBMPISnapshot(),
 			"ibm_pi_network_port_attach": resourceIBMPINetworkPortAttach(),
+			"ibm_pi_cloud_connection":    resourceIBMPICloudConnection(),
 
 			//Private DNS related resources
 			"ibm_dns_zone":              resourceIBMPrivateDNSZone(),
