@@ -54,3 +54,7 @@ require (
 )
 
 replace github.com/softlayer/softlayer-go v1.0.3 => github.com/IBM-Cloud/softlayer-go v1.0.5-tf
+
+// FIXME: Remove while creating PR.
+// Point to personal fork
+replace github.com/IBM-Cloud/power-go-client => github.com/yussufsh/power-go-client v1.99.1

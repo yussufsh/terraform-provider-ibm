@@ -39,7 +39,7 @@ func resourceIBMPIImage() *schema.Resource {
 				DiffSuppressFunc: applyOnce,
 			},
 
-			helpers.PIInstanceImageName: {
+			helpers.PIInstanceImageId: {
 				Type:             schema.TypeString,
 				Required:         true,
 				Description:      "Instance image name",
@@ -72,7 +72,7 @@ func resourceIBMPIImageCreate(d *schema.ResourceData, meta interface{}) error {
 
 	powerinstanceid := d.Get(helpers.PICloudInstanceId).(string)
 	name := d.Get(helpers.PIImageName).(string)
-	imageid := d.Get(helpers.PIInstanceImageName).(string)
+	imageid := d.Get(helpers.PIInstanceImageId).(string)
 
 	client := st.NewIBMPIImageClient(sess, powerinstanceid)
 
