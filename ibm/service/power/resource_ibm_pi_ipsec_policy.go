@@ -54,7 +54,7 @@ func ResourceIBMPIIPSecPolicy() *schema.Resource {
 			helpers.PIVPNPolicyEncryption: {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validate.ValidateAllowedStringValues([]string{"3des-cbc", "aes-128-cbc", "aes-128-gcm", "aes-192-cbc", "aes-256-cbc", "aes-256-gcm", "des-cbc"}),
+				ValidateFunc: validate.ValidateAllowedStringValues([]string{"aes-256-cbc", "aes-192-cbc", "aes-128-cbc", "aes-256-gcm", "aes-128-gcm", "3des-cbc"}),
 				Description:  "Encryption of the IPSec Policy",
 			},
 			helpers.PIVPNPolicyKeyLifetime: {
@@ -74,7 +74,7 @@ func ResourceIBMPIIPSecPolicy() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      "none",
-				ValidateFunc: validate.ValidateAllowedStringValues([]string{"hmac-md5-96", "hmac-sha-256-128", "hmac-sha1-96", "none"}),
+				ValidateFunc: validate.ValidateAllowedStringValues([]string{"hmac-sha-256-128", "hmac-sha1-96", "none"}),
 				Description:  "Authentication for the IPSec Policy",
 			},
 
