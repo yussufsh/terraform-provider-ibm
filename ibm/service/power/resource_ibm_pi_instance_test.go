@@ -140,7 +140,7 @@ func testAccIBMPIInstanceVTLConfig(name string) string {
 		pi_key_name          = "%[2]s"
 		pi_ssh_key           = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEArb2aK0mekAdbYdY9rwcmeNSxqVCwez3WZTYEq+1Nwju0x5/vQFPSD2Kp9LpKBbxx3OVLN4VffgGUJznz9DAr7veLkWaf3iwEil6U4rdrhBo32TuDtoBwiczkZ9gn1uJzfIaCJAJdnO80Kv9k0smbQFq5CSb9H+F5VGyFue/iVd5/b30MLYFAz6Jg1GGWgw8yzA4Gq+nO7HtyuA2FnvXdNA3yK/NmrTiPCdJAtEPZkGu9LcelkQ8y90ArlKfjtfzGzYDE4WhOufFxyWxciUePh425J2eZvElnXSdGha+FCfYjQcvqpCVoBAG70U4fJBGjB+HL/GpCXLyiYXPrSnzC9w=="
 	}
-	
+
 	resource "ibm_pi_network" "vtl_network" {
 		pi_cloud_instance_id = "%[1]s"
 		pi_network_name      = "%[2]s"
@@ -162,7 +162,7 @@ func testAccIBMPIInstanceVTLConfig(name string) string {
 			network_id = ibm_pi_network.vtl_network.network_id
 		}
 	  }
-	
+
 	`, acc.Pi_cloud_instance_id, name, acc.Pi_image)
 }
 
@@ -412,15 +412,22 @@ func testAccIBMPIInstanceMixedStorage(name string) string {
 	`, acc.Pi_cloud_instance_id, name)
 }
 
+<<<<<<< Updated upstream
 func TestAccIBMPIInstanceUpdateActiveState(t *testing.T) {
 	instanceRes := "ibm_pi_instance.power_instance"
 	name := fmt.Sprintf("tf-pi-instance-%d", acctest.RandIntRange(10, 100))
+=======
+func TestAccIBMPIInstanceUpdate(t *testing.T) {
+	instanceRes := "ibm_pi_instance.instance"
+	name := fmt.Sprintf("tf-pi-inupdate-%d", acctest.RandIntRange(10, 100))
+>>>>>>> Stashed changes
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { acc.TestAccPreCheck(t) },
 		Providers:    acc.TestAccProviders,
 		CheckDestroy: testAccCheckIBMPIInstanceDestroy,
 		Steps: []resource.TestStep{
 			{
+<<<<<<< Updated upstream
 				Config: testAccCheckIBMPIActiveInstanceConfigUpdate(name, helpers.PIInstanceHealthOk, "0.25", "2"),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckIBMPIInstanceExists(instanceRes),
@@ -436,10 +443,29 @@ func TestAccIBMPIInstanceUpdateActiveState(t *testing.T) {
 					resource.TestCheckResourceAttr(instanceRes, "pi_instance_name", name),
 				),
 				ExpectNonEmptyPlan: true,
+=======
+				Config: testAccCheckIBMPIInstanceSimple(name, "2", "0.5", "OK"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckIBMPIInstanceExists(instanceRes),
+					resource.TestCheckResourceAttr(instanceRes, "pi_instance_name", name),
+					resource.TestCheckResourceAttr(instanceRes, "pi_processors", "0.5"),
+					resource.TestCheckResourceAttr(instanceRes, "pi_memory", "2"),
+				),
+			},
+			{
+				Config: testAccCheckIBMPIInstanceSimple(name, "2", "1", "OK"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckIBMPIInstanceExists(instanceRes),
+					resource.TestCheckResourceAttr(instanceRes, "pi_instance_name", name),
+					resource.TestCheckResourceAttr(instanceRes, "pi_processors", "1"),
+					resource.TestCheckResourceAttr(instanceRes, "pi_memory", "2"),
+				),
+>>>>>>> Stashed changes
 			},
 		},
 	})
 }
+<<<<<<< Updated upstream
 
 func TestAccIBMPIInstanceUpdateStoppedState(t *testing.T) {
 	instanceRes := "ibm_pi_instance.power_instance"
@@ -583,4 +609,33 @@ func testAccCheckIBMPIInstanceStatus(n, status string) resource.TestCheckFunc {
 
 		return nil
 	}
+=======
+func testAccCheckIBMPIInstanceSimple(name, memory, cores, instanceHealthStatus string) string {
+	return fmt.Sprintf(`
+	  resource "ibm_pi_key" "key" {
+		pi_cloud_instance_id = "%[1]s"
+		pi_key_name          = "%[2]s"
+		pi_ssh_key           = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCKVmnMOlHKcZK8tpt3MP1lqOLAcqcJzhsvJcjscgVERRN7/9484SOBJ3HSKxxNG5JN8owAjy5f9yYwcUg+JaUVuytn5Pv3aeYROHGGg+5G346xaq3DAwX6Y5ykr2fvjObgncQBnuU5KHWCECO/4h8uWuwh/kfniXPVjFToc+gnkqA+3RKpAecZhFXwfalQ9mMuYGFxn+fwn8cYEApsJbsEmb0iJwPiZ5hjFC8wREuiTlhPHDgkBLOiycd20op2nXzDbHfCHInquEe/gYxEitALONxm0swBOwJZwlTDOB7C6y2dzlrtxr1L59m7pCkWI4EtTRLvleehBoj3u7jB4usR"
+	  }
+	  data "ibm_pi_network" "power_networks" {
+		pi_cloud_instance_id = "%[1]s"
+		pi_network_name      = "%[4]s"
+	  }
+	  resource "ibm_pi_instance" "instance" {
+		pi_memory             = "%[5]s"
+		pi_processors         = "%[6]s"
+		pi_instance_name      = "%[2]s"
+		pi_proc_type          = "shared"
+		pi_image_id           = "%[3]s"
+		pi_key_pair_name      = ibm_pi_key.key.key_id
+		pi_sys_type           = "e980"
+		pi_cloud_instance_id  = "%[1]s"
+		pi_storage_type 	  = "tier3"
+		pi_health_status      = "%[7]s"
+		pi_network {
+			network_id = data.ibm_pi_network.power_networks.id
+		}
+	  }
+	`, acc.Pi_cloud_instance_id, name, acc.Pi_image, acc.Pi_network_name, memory, cores, instanceHealthStatus)
+>>>>>>> Stashed changes
 }

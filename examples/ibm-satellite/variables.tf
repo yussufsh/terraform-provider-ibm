@@ -9,11 +9,12 @@ variable "ibmcloud_api_key" {
 
 variable "ibm_region" {
   description = "Region of the IBM Cloud account. Currently supported regions for satellite are us-east and eu-gb region."
-  default = "us-east"
+  default = "jp-tok"
 }
 
 variable "resource_group" {
   description = "Name of the resource group on which location has to be created"
+  default = "ibm-hypershift-dev"
 }
 
 ##################################################
@@ -21,19 +22,19 @@ variable "resource_group" {
 ##################################################
 variable "location" {
   description = "Location Name"
-  default = "satelllite-ibm"
+  default = "yus-satellite-location"
 }
 
 variable "managed_from" {
   description = "The IBM Cloud region to manage your Satellite location from. Choose a region close to your on-prem data center for better performance."
   type        = string
-  default     = "wdc"
+  default     = "tok"
 }
 
 variable "location_zones" {
   description = "Allocate your hosts across these three zones"
   type        = list(string)
-  default     = ["us-east-1", "us-east-2", "us-east-3"]
+  default     = ["zone-1", "zone-2", "zone-3"]
 }
 
 variable "location_bucket" {
@@ -50,7 +51,7 @@ variable "is_location_exist" {
 variable "host_labels" {
   description = "Labels to add to attach host script"
   type        = list(string)
-  default     = ["env:prod"]
+  default     = ["env:test"]
 
   validation {
     condition     = can([for s in var.host_labels : regex("^[a-zA-Z0-9:]+$", s)])
@@ -61,7 +62,7 @@ variable "host_labels" {
 variable "tags" {
   description = "List of tags associated with this satellite."
   type        = list(string)
-  default     = ["env:prod"]
+  default     = ["env:test"]
 }
 
 ##################################################
@@ -82,13 +83,13 @@ variable "addl_host_count" {
 variable "is_prefix" {
   description = "Prefix to the Names of the VPC Infrastructure resources"
   type        = string
-  default     = "satellite-ibm"
+  default     = "yus-sat"
 }
 
 variable "public_key" {
   description = "SSH Public Key. Get your ssh key by running `ssh-key-gen` command"
   type        = string
-  default     = null
+  default     = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEArb2aK0mekAdbYdY9rwcmeNSxqVCwez3WZTYEq+1Nwju0x5/vQFPSD2Kp9LpKBbxx3OVLN4VffgGUJznz9DAr7veLkWaf3iwEil6U4rdrhBo32TuDtoBwiczkZ9gn1uJzfIaCJAJdnO80Kv9k0smbQFq5CSb9H+F5VGyFue/iVd5/b30MLYFAz6Jg1GGWgw8yzA4Gq+nO7HtyuA2FnvXdNA3yK/NmrTiPCdJAtEPZkGu9LcelkQ8y90ArlKfjtfzGzYDE4WhOufFxyWxciUePh425J2eZvElnXSdGha+FCfYjQcvqpCVoBAG70U4fJBGjB+HL/GpCXLyiYXPrSnzC9w=="
 }
 
 ##################################################
@@ -97,13 +98,13 @@ variable "public_key" {
 variable "cluster" {
   description = "Satellite Cluster Name"
   type        = string
-  default     = "satellite-ibm-cluster"
+  default     = "yus-sat-cluster"
 }
 
 variable "cluster_zones" {
   description = "Allocate zones to cluster"
   type        = list(string)
-  default     = ["us-east-1", "us-east-2", "us-east-3"]
+  default     = ["zone-1", "zone-2", "zone-3"]
 }
 
 variable "default_wp_labels" {
@@ -118,13 +119,13 @@ variable "default_wp_labels" {
 variable "kube_version" {
   description = "Satellite Kube Version"
   type        = string
-  default     = "4.7_openshift"
+  default     = "4.10_openshift"
 }
 
 variable "worker_pool_name" {
   description = "Worker Pool Name"
   type        = string
-  default     = "satellite-ibm-cluster-wp"
+  default     = "yus-sat-cluster-wp"
 }
 
 variable "workerpool_labels" {
@@ -151,7 +152,7 @@ variable "cluster_tags" {
 variable "zone_name" {
   description = "zone name"
   type        = string
-  default     = "test_zone"
+  default     = "zone-1"
 }
 
 ##################################################

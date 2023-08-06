@@ -2128,7 +2128,7 @@ func (c *Config) ClientSession() (interface{}, error) {
 	piURL := ContructEndpoint(c.Region, "power-iaas.cloud.ibm.com")
 	ibmPIOptions := &ibmpisession.IBMPIOptions{
 		Authenticator: authenticator,
-		Debug:         os.Getenv("TF_LOG") != "",
+		Debug:         os.Getenv("TF_LOG") != "" && os.Getenv("TF_LOG") != "off",
 		Region:        c.Region,
 		URL:           EnvFallBack([]string{"IBMCLOUD_PI_API_ENDPOINT"}, piURL),
 		UserAccount:   userConfig.UserAccount,
@@ -2136,7 +2136,7 @@ func (c *Config) ClientSession() (interface{}, error) {
 	}
 	ibmpisession, err := ibmpisession.NewIBMPISession(ibmPIOptions)
 	if err != nil {
-		session.ibmpiConfigErr = fmt.Errorf("Error occured while configuring ibmpisession: %q", err)
+		session.ibmpiConfigErr = fmt.Errorf("error occured while configuring ibmpisession: %q", err)
 	}
 	session.ibmpiSession = ibmpisession
 

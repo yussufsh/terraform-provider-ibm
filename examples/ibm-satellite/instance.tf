@@ -8,6 +8,7 @@ data "ibm_is_image" "rhel7" {
 
 resource "ibm_is_vpc" "vpc" {
   name = "${var.is_prefix}-vpc"
+  resource_group = data.ibm_resource_group.resource_group.id
 }
 
 resource "ibm_is_subnet" "satellite_subnet" {
@@ -16,6 +17,7 @@ resource "ibm_is_subnet" "satellite_subnet" {
   vpc                      = ibm_is_vpc.vpc.id
   total_ipv4_address_count = 256
   zone                     = "${var.ibm_region}-${count.index + 1}"
+  resource_group = data.ibm_resource_group.resource_group.id
 }
 
 resource "ibm_is_security_group_rule" "sg-rule-inbound-ssh" {

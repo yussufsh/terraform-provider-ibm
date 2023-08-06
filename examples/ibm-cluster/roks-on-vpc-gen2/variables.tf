@@ -1,25 +1,24 @@
 variable "ibmcloud_api_key" {
-    default = "" 
 }
 
 variable "cos_service_name" {
-    default = "myservice"
+  default = "yus-ocp"
 }
 
 variable "cos_service_plan" {
-    default = "standard"
+  default = "standard"
 }
 
 variable "cluster_node_flavor" {
-    default = "bx2.16x64"
+  default = "bx2.16x64"
 }
 
 variable "cluster_kube_version" {
-    default = "4.4_openshift"
+  default = "4.11_openshift"
 }
 
-variable "deafult_worker_pool_count"{
-    default = "2"
+variable "deafult_worker_pool_count" {
+  default = "1"
 }
 
 variable "region" {
@@ -27,17 +26,17 @@ variable "region" {
 }
 
 variable "resource_group" {
-  default = "Default"
+  default = "ibm-satellite-dev"
 }
 
 variable "cluster_name" {
-  default = "cluster-roks-on-vpc"
+  default = "yus-roks-on-vpc"
 }
 
 variable "worker_pool_name" {
   default = "workerpool"
 }
 
-variable "entitlement"{
+variable "entitlement" {
   default = ""
 }
